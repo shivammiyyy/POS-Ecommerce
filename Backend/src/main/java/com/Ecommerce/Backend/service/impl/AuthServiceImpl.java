@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserException("Username already exists");
         }
 
-        if(userDto.getRole().equals(UserRole.ROLE_ADMIN)){
+        if(userDto.getRole().equals(UserRole.ROLE_STORE_ADMIN)){
             throw new UserException("Admin role is not allowed");
         }
 
