@@ -1,6 +1,5 @@
 package com.Ecommerce.Backend.service;
 
-import com.Ecommerce.Backend.exception.UserException;
 import com.Ecommerce.Backend.payload.dto.CategoryDTO;
 
 import java.util.List;
