@@ -37,8 +37,12 @@ public class Order {
 
     private PaymentType paymentType;
 
+    private String stripePaymentIntentId;
+
+    private boolean paymentCompleted;
+
     @PrePersist
     protected void onCreate() {
-        LocalDateTime createdAt = LocalDateTime.now();
+        this.createAt = LocalDateTime.now();
     }
 }

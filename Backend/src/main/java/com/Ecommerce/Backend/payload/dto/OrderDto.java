@@ -4,7 +4,6 @@ package com.Ecommerce.Backend.payload.dto;
 import com.Ecommerce.Backend.domain.PaymentType;
 import com.Ecommerce.Backend.model.Customer;
 
-import com.Ecommerce.Backend.model.OrderItem;
 import lombok.Builder;
 import lombok.Data;
 
@@ -33,6 +32,10 @@ public class OrderDto {
     private List<OrderItemDTO> items;
 
     private PaymentType paymentType;
+
+    private String stripePaymentIntentId;
+
+    private boolean paymentCompleted;
 
     private Long orderId ;
 }

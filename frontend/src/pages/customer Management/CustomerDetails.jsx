@@ -33,7 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
           </CardHeader>
           <CardContent>
             <div className='flex item-center gap-2'>
-              <StarIcon className='h-4 w-4 mr-1 text-yellow-500' />
+              <StarIcon className='h-6 w-4 mr-1 text-yellow-500' />
               <span>{customer.loyaltyPoints} Points</span>
             </div>
           </CardContent>
@@ -44,7 +44,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
           </CardHeader>
           <CardContent>
             <div className='flex item-center gap-2'>
-              <StarIcon className='h-4 w-4 mr-1 text-yellow-500' />
+              <StarIcon className='h-6 w-4 mr-1 text-yellow-500' />
               <span>{customer.totalOrders} Points</span>
             </div>
           </CardContent>
@@ -55,7 +55,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
           </CardHeader>
           <CardContent>
             <div className='flex item-center gap-2'>
-              <StarIcon className='h-4 w-4 mr-1 text-yellow-500' />
+              <StarIcon className='h-6 w-4 mr-1 text-yellow-500' />
               <span>{customer.totalSpent} Points</span>
             </div>
           </CardContent>

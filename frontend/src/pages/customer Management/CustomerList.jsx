@@ -7,7 +7,7 @@ const customers = [
     fullName: "John Doe",
     email: "john.doe@example.com",
     phone: "+1-202-555-0176",
-    loyalityPoints: 120,
+    loyaltyPoints: 120,
     totalOrders: 15,
     totalSpent: 1500.75,
     averageOrderValue: 1700.05
@@ -17,7 +17,7 @@ const customers = [
     fullName: "Jane Smith",
     email: "jane.smith@example.com",
     phone: "+1-202-555-0124",
-    loyalityPoints: 854,
+    loyaltyPoints: 854,
     totalOrders: 30,
     totalSpent: 3000.50,
     averageOrderValue: 2000.00
@@ -27,7 +27,7 @@ const customers = [
     fullName: "Michael Johnson",
     email: "michael.johnson@example.com",
     phone: "+1-202-555-0148",
-    loyalityPoints: 784,
+    loyaltyPoints: 784,
     totalOrders: 25,
     totalSpent: 2500.00,
     averageOrderValue: 1500.75
@@ -37,7 +37,7 @@ const customers = [
     fullName: "Emily Davis",
     email: "emily.davis@example.com",
     phone: "+1-202-555-0199",
-    loyalityPoints: 478,
+    loyaltyPoints: 478,
     totalOrders: 20,
     totalSpent: 2000.25,
     averageOrderValue: 1600.50
@@ -47,7 +47,7 @@ const customers = [
     fullName: "David Brown",
     email: "david.brown@example.com",
     phone: "+1-202-555-0183",
-    loyalityPoints: 451,
+    loyaltyPoints: 451,
     totalOrders: 18,
     totalSpent: 1800.00,
     averageOrderValue: 1000.00

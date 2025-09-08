@@ -5,15 +5,15 @@ import com.Ecommerce.Backend.domain.PaymentType;
 import com.Ecommerce.Backend.mapper.OrderMapper;
 import com.Ecommerce.Backend.model.*;
 import com.Ecommerce.Backend.payload.dto.OrderDto;
-import com.Ecommerce.Backend.repository.OrderItemRepository;
 import com.Ecommerce.Backend.repository.OrderRepository;
 import com.Ecommerce.Backend.repository.ProductRepository;
 import com.Ecommerce.Backend.service.OrderService;
+import com.Ecommerce.Backend.service.StripeService;
 import com.Ecommerce.Backend.service.UserService;
+import com.stripe.model.PaymentIntent;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
+    private final StripeService stripeService;
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws Exception {
@@ -37,32 +37,54 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception("Branch not found");
         }
 
+        // Calculate total amount from items
+        double total = orderDto.getItems().stream()
+                .mapToDouble(itemDto -> {
+                    Product product = productRepository.findById(itemDto.getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found with id: " + itemDto.getProductId()));
+                    return product.getSellingPrice() * itemDto.getQuantity();
+                })
+                .sum();
+
+        // Create a Stripe PaymentIntent
+        PaymentIntent paymentIntent = stripeService.createPaymentIntent(
+                Math.round(total * 100), // Amount in cents
+                "usd",
+                "Payment for order by cashier " + cashier.getId()
+        );
+
         Order order = Order.builder()
                 .branch(branch)
                 .cashier(cashier)
                 .customer(orderDto.getCustomer())
                 .paymentType(orderDto.getPaymentType())
+                .totalAmount(total)
+                .stripePaymentIntentId(paymentIntent.getId())
+                .paymentCompleted(false)
                 .build();
 
+        // Map order items now linking to order
         List<OrderItem> orderItems = orderDto.getItems().stream().map(
-            itemDto->{
-                Product product = productRepository.findById(itemDto.getProductId())
-                        .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " ));
+                itemDto -> {
+                    Product product = productRepository.findById(itemDto.getProductId())
+                            .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + itemDto.getProductId()));
 
-                return OrderItem.builder()
-                        .product(product)
-                        .quantity(itemDto.getQuantity())
-                        .price(product.getSellingPrice() * itemDto.getQuantity())
-                        .order(order) // link back to the order
-                        .build();
-            }
+                    return OrderItem.builder()
+                            .product(product)
+                            .quantity(itemDto.getQuantity())
+                            .price(product.getSellingPrice() * itemDto.getQuantity())
+                            .order(order)
+                            .build();
+                }
         ).toList();
-        double total = orderItems.stream().mapToDouble(OrderItem::getPrice).sum();
-        order.setTotalAmount(total);
+
         order.setItems(orderItems);
         Order savedOrder = orderRepository.save(order);
+
         return OrderMapper.toDto(savedOrder);
     }
+
+    // Other methods as before unchanged...
 
     @Override
     public OrderDto getOrderById(Long id) throws Exception {
@@ -71,20 +93,19 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new Exception("Order not found with id: " + id));
     }
 
-
     @Override
     public List<OrderDto> getOrdersByBranch(Long branchId,
                                             Long customerId,
                                             Long cashierId,
                                             PaymentType paymentType,
-                                            OrderStatus orderStatus) throws Exception {
+                                            OrderStatus orderStatus) {
         return orderRepository.findByBranchId(branchId).stream()
                 .filter(order -> customerId==null ||
                         (order.getCustomer()!=null &&
                                 order.getCustomer().getId().equals(customerId)))
                 .filter(order -> cashierId==null ||
                         order.getCashier()!=null &&
-                        order.getCashier().getId().equals(cashierId))
+                                order.getCashier().getId().equals(cashierId))
                 .filter(order -> paymentType==null ||
                         order.getPaymentType() == paymentType)
                 .map(OrderMapper::toDto).collect(Collectors.toList());
@@ -103,7 +124,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getTodayOrdersByBranch(Long branchId) throws Exception {
+    public List<OrderDto> getTodayOrdersByBranch(Long branchId)  {
         LocalDate today = LocalDate.now();
         LocalDateTime start = today.atStartOfDay();
         LocalDateTime end = today.plusDays(1).atStartOfDay();
@@ -113,13 +134,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getOrdersByCustomerId(Long customerId) throws Exception {
+    public List<OrderDto> getOrdersByCustomerId(Long customerId){
         return orderRepository.findByCustomerId(customerId)
                 .stream().map(OrderMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderDto> getTop5RecentOrdersByBranchId(Long branchId) throws Exception {
+    public List<OrderDto> getTop5RecentOrdersByBranchId(Long branchId)  {
         return orderRepository.findTop5ByBranchIdOrderByCreateAtDesc(branchId).stream().map(OrderMapper::toDto).collect(Collectors.toList());
     }
 }

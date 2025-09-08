@@ -1,6 +1,5 @@
 package com.Ecommerce.Backend.model;
 
-import io.micrometer.observation.annotation.Observed;
 import jakarta.persistence.*;
 import lombok.*;
 
