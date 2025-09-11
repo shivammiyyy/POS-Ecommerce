@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,13 +44,13 @@ public class RefundServiceImpl implements RefundService {
     }
 
     @Override
-    public List<RefundDTO> getAllRefunds() throws Exception {
+    public List<RefundDTO> getAllRefunds(){
         return refundRepository.findAll().stream()
                 .map(RefundMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<RefundDTO> getRefundByCashier(Long cashierId) throws Exception {
+    public List<RefundDTO> getRefundByCashier(Long cashierId) {
 
         return refundRepository.findByCashierId(cashierId).stream()
                 .map(RefundMapper::toDto).collect(Collectors.toList());
@@ -73,7 +72,7 @@ public class RefundServiceImpl implements RefundService {
 
     @Override
     public List<RefundDTO> getRefundByBranch(Long branchId) throws Exception {
-        return refundRepository.findById(branchId).stream()
+        return refundRepository.findByBranchId(branchId).stream()
                 .map(RefundMapper::toDto).collect(Collectors.toList());
     }
 

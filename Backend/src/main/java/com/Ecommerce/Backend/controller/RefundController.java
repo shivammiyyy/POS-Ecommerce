@@ -1,7 +1,7 @@
 package com.Ecommerce.Backend.controller;
 
 import com.Ecommerce.Backend.payload.dto.RefundDTO;
-import com.Ecommerce.Backend.repository.RefundRepository;
+import com.Ecommerce.Backend.payload.response.ApiResponse;
 import com.Ecommerce.Backend.service.RefundService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,10 +17,9 @@ import java.util.List;
 @RequestMapping("/api/refunds")
 public class RefundController {
     private final RefundService refundService;
-    private final RefundRepository refundRepository;
 
     @PostMapping()
-    public ResponseEntity<RefundDTO> createRefund(RefundDTO refundDTO) throws Exception {
+    public ResponseEntity<RefundDTO> createRefund(@RequestBody RefundDTO refundDTO) throws Exception {
         RefundDTO refund = refundService.createRefund(refundDTO);
         return ResponseEntity.ok(refund);
     }
@@ -58,6 +57,16 @@ public class RefundController {
     public ResponseEntity<RefundDTO> getRefundById(@PathVariable Long id) throws Exception {
         return ResponseEntity.ok(refundService.getRefundById(id));
     }
+
+    @PostMapping("delete/{id}")
+    public ResponseEntity<ApiResponse> deleteRefundById(@PathVariable Long id) throws Exception {
+        refundService.deleteRefund(id);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setMessage("success in delete refund");
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
 
 
 

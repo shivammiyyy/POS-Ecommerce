@@ -23,7 +23,6 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer updateCustomer(Long id, Customer customer) throws Exception {
         Customer updatedCustomer = customerRepository.findById(id).orElseThrow(() -> new Exception("Customer Not Found"));
         updatedCustomer.setFullName(customer.getFullName());
-        updatedCustomer.setEmail(customer.getEmail());
         updatedCustomer.setPhone(customer.getPhone());
         return customerRepository.save(updatedCustomer);
     }
@@ -41,12 +40,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> getAllCustomers() throws Exception {
+    public List<Customer> getAllCustomers()  {
         return customerRepository.findAll();
     }
 
     @Override
-    public List<Customer> searchCustomer(String keyword) throws Exception {
+    public List<Customer> searchCustomer(String keyword) {
         return customerRepository.findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
                 keyword,keyword
         );

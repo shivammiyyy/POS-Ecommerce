@@ -21,15 +21,20 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Customer> update(@RequestParam Long id, @RequestBody Customer customer) throws Exception {
+    public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customer) throws Exception {
         return ResponseEntity.ok(customerService.updateCustomer(id,customer));
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> delete(@RequestParam Long id) throws Exception {
+    public ResponseEntity<ApiResponse> delete(@PathVariable Long id) throws Exception {
          customerService.deleteCustomer(id);
          ApiResponse apiResponse = new ApiResponse();
          apiResponse.setMessage("Customer deleted successfully");
          return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(customerService.getCustomer(id));
     }
 
     @GetMapping()

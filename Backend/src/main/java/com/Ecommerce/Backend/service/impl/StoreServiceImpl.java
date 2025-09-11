@@ -81,8 +81,10 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public void deleteStore(Long id) throws UserException {
-        Store store = getStoreByAdmin();
+    public void deleteStore(Long id) throws Exception {
+        Store store = storeRepository.findById(id).orElseThrow(
+                ()-> new Exception("Store is not found")
+        );
         storeRepository.delete(store);
 
     }

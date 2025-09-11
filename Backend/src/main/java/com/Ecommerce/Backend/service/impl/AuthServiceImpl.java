@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final CustomUserImpl customUserImpl;
 
     @Override
-    public AuthResponse Signup(UserDto userDto) throws UserException {
+    public AuthResponse signup(UserDto userDto) throws UserException {
         User user = userRepository.findByEmail(userDto.getEmail());
         if (user != null) {
             throw new UserException("Username already exists");
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse Login(UserDto userDto) throws UserException, Exception {
+    public AuthResponse login(UserDto userDto) throws UserException, Exception {
         String email = userDto.getEmail();
         String password = userDto.getPassword();
         Authentication authentication = authenticate(email, password);

@@ -24,7 +24,7 @@ public class AuthController {
             @RequestBody UserDto userDto
     ) throws  UserException {
         return ResponseEntity.ok(
-                authService.Signup(userDto)
+                authService.signup(userDto)
         );
 
     }
@@ -35,7 +35,7 @@ public class AuthController {
             @RequestBody UserDto userDto
     ) throws Exception, UserException {
         return ResponseEntity.ok(
-                authService.Login(userDto)
+                authService.login(userDto)
         );
 
     }

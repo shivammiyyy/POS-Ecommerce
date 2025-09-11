@@ -56,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public UserDto createBranchEmployee(UserDto employee, Long branchId) throws Exception {
-        Branch branch = branchRepository.findById(employee.getBranchId()).orElseThrow(
+        Branch branch = branchRepository.findById(branchId).orElseThrow(
                 ()-> new Exception("Branch not found")
         );
 
@@ -80,7 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
         existingEmployee.setEmail(employeeDetails.getEmail());
         existingEmployee.setFullName(employeeDetails.getFullName());
-        existingEmployee.setPassword(employeeDetails.getPassword());
+        existingEmployee.setPassword(passwordEncoder.encode(employeeDetails.getPassword()));
         existingEmployee.setRole(employeeDetails.getRole());
         existingEmployee.setBranch(branch);
         return userRepository.save(existingEmployee);

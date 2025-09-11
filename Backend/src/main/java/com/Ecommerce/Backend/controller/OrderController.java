@@ -4,8 +4,6 @@ import com.Ecommerce.Backend.domain.OrderStatus;
 import com.Ecommerce.Backend.domain.PaymentType;
 import com.Ecommerce.Backend.payload.dto.OrderDto;
 import com.Ecommerce.Backend.service.OrderService;
-import com.Ecommerce.Backend.repository.OrderRepository;
-import com.Ecommerce.Backend.model.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    private final OrderRepository orderRepository;
 
     @PostMapping()
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto)throws Exception {
@@ -40,7 +37,7 @@ public class OrderController {
 
     @GetMapping("/cashier/{cashierId}")
     public ResponseEntity<List<OrderDto>> getOrderByCashierId(@PathVariable Long cashierId) {
-        return ResponseEntity.ok(orderService.getOrdersByCahier(cashierId));
+        return ResponseEntity.ok(orderService.getOrdersByCashier(cashierId));
     }
 
     @GetMapping("/today/branch/{branchId}")
@@ -58,18 +55,4 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getTop5RecentOrdersByBranchId(branchId));
     }
 
-    // Endpoint to confirm payment by providing stripePaymentIntentId and orderId
-    @PostMapping("/confirm-payment/{orderId}")
-    public ResponseEntity<String> confirmPayment(@PathVariable Long orderId, @RequestParam String paymentIntentId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        if (order.getStripePaymentIntentId() != null && order.getStripePaymentIntentId().equals(paymentIntentId)) {
-            order.setPaymentCompleted(true);
-            orderRepository.save(order);
-            return ResponseEntity.ok("Payment confirmed");
-        } else {
-            return ResponseEntity.badRequest().body("Invalid payment intent ID");
-        }
-    }
 }

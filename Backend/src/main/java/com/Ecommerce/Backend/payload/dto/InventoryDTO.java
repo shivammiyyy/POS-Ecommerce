@@ -17,7 +17,7 @@ public class InventoryDTO {
 
     private ProductDTO product;
 
-    private Long brandId;
+    private Long branchId;
     private Long productId;
 
     private Integer quantity;

@@ -17,7 +17,7 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
-    public ResponseEntity<BranchDTO> createBranch(BranchDTO branchDTO) throws UserException {
+    public ResponseEntity<BranchDTO> createBranch(@RequestBody BranchDTO branchDTO) throws UserException {
 
         BranchDTO createBranchDTO = branchService.createBranch(branchDTO);
         return ResponseEntity.ok().body(createBranchDTO);
@@ -31,7 +31,7 @@ public class BranchController {
     }
 
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<List<BranchDTO>> getAllBranchesByStoreId(@PathVariable Long storeId) throws Exception {
+    public ResponseEntity<List<BranchDTO>> getAllBranchesByStoreId(@PathVariable Long storeId)  {
 
         List<BranchDTO> createBranchDTO = branchService.getAllBranchesByStoreId(storeId);
         return ResponseEntity.ok().body(createBranchDTO);

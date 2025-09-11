@@ -23,7 +23,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final ProductRepository productRepository;
     @Override
     public InventoryDTO createInventory(InventoryDTO inventoryDTO) throws Exception {
-        Branch branch = branchRepository.findById(inventoryDTO.getBrandId()).orElseThrow(
+        Branch branch = branchRepository.findById(inventoryDTO.getBranchId()).orElseThrow(
                 ()-> new Exception("Branch not exist...")
         );
         Product product = productRepository.findById(inventoryDTO.getProductId()).orElseThrow(

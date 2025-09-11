@@ -20,7 +20,7 @@ public interface StoreService {
 
     StoreDTO updateStore(Long id, StoreDTO storeDTO) throws UserException;
 
-    void deleteStore(Long id) throws UserException;
+    void deleteStore(Long id) throws Exception;
 
     StoreDTO getStoreByEmployee() throws UserException;
 

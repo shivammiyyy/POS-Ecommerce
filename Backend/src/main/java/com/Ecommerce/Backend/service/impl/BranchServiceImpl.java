@@ -44,7 +44,6 @@ public class BranchServiceImpl implements BranchService {
         existing.setEmail(branchDTO.getEmail());
         existing.setAddress(branchDTO.getAddress());
         existing.setPhone(branchDTO.getPhone());
-        existing.setCreatedAt(branchDTO.getCreatedAt());
         existing.setCloseTime(branchDTO.getCloseTime());
         existing.setUpdatedAt(LocalDateTime.now());
 

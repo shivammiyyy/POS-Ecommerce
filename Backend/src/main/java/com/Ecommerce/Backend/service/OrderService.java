@@ -14,7 +14,7 @@ public interface OrderService {
                                      Long cashierId,
                                      PaymentType paymentType,
                                      OrderStatus orderStatus) throws Exception;
-    List<OrderDto> getOrdersByCahier(Long cashierId);
+    List<OrderDto> getOrdersByCashier(Long cashierId);
     void deleteOrder(Long id) throws Exception;
     List<OrderDto> getTodayOrdersByBranch(Long branchId) throws Exception;
     List<OrderDto> getOrdersByCustomerId(Long customerId) throws Exception;

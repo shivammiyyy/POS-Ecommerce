@@ -6,6 +6,6 @@ import com.Ecommerce.Backend.payload.response.AuthResponse;
 
 public interface AuthService {
 
-    AuthResponse Signup(UserDto userDto) throws UserException;
-    AuthResponse Login(UserDto userDto) throws UserException, Exception;
+    AuthResponse signup(UserDto userDto) throws UserException;
+    AuthResponse login(UserDto userDto) throws  Exception;
 }

@@ -74,8 +74,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getProductByStoreId(Long StoreId) {
-        List<Product> products = productRepository.findByStoreId(StoreId);
+    public List<ProductDTO> getProductByStoreId(Long storeId) {
+        List<Product> products = productRepository.findByStoreId(storeId);
 
         return products.stream()
                 .map(ProductMapper::toDTO)

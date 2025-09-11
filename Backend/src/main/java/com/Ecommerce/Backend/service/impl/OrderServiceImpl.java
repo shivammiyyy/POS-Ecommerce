@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         // Create a Stripe PaymentIntent
         PaymentIntent paymentIntent = stripeService.createPaymentIntent(
                 Math.round(total * 100), // Amount in cents
-                "usd",
+                "inr",
                 "Payment for order by cashier " + cashier.getId()
         );
 
@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getOrdersByCahier(Long cashierId) {
+    public List<OrderDto> getOrdersByCashier(Long cashierId) {
         return orderRepository.findByCashierId(cashierId).stream()
                 .map(OrderMapper::toDto).collect(Collectors.toList());
     }

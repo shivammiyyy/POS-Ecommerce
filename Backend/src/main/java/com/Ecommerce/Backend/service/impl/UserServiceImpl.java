@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UserException("User not found");
         }
-        return null;
+        return user;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException("Invalid Email...");
 
         }
-        return null;
+        return user;
     }
 
     @Override
