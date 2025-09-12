@@ -6,24 +6,13 @@ import axiosInstance from "./axios";
 
 // Get user by ID
 export const getUserById = async (id) => {
-  const response = await axiosInstance.get(`/users/${id}`);
+  const response = await axiosInstance.get(`/api/users/${id}`);
   return response.data;
 };
 
-// Update user profile
-export const updateUser = async (id, userData) => {
-  const response = await axiosInstance.put(`/users/${id}`, userData);
-  return response.data;
-};
-
-// Delete user
-export const deleteUser = async (id) => {
-  const response = await axiosInstance.delete(`/users/${id}`);
-  return response.data;
-};
 
 // List all users (admin only)
-export const getAllUsers = async () => {
-  const response = await axiosInstance.get("/users");
+export const getUserProfile = async () => {
+  const response = await axiosInstance.get("/api/users/profile");
   return response.data;
 };

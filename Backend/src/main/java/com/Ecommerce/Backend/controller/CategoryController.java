@@ -26,12 +26,12 @@ public class CategoryController {
         return ResponseEntity.ok().body(categoryService.getCategoriesByStore(storeId));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable Long id)throws Exception {
         return ResponseEntity.ok().body(categoryService.updateCategory(id, categoryDTO));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable Long id)throws Exception {
         categoryService.deleteCategory(id);
 

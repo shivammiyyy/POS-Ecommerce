@@ -16,7 +16,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @RequestMapping("/profile")
+    @GetMapping("/profile")
     public ResponseEntity<UserDto> getUserProfile(
             @RequestHeader("Authorization") String jwt
      ) throws Exception {
@@ -25,7 +25,7 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.toDTO(user) );
     }
 
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(
             @RequestHeader("Authorization") String jwt,
             @PathVariable Long id

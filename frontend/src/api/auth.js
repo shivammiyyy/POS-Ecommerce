@@ -25,6 +25,6 @@ export const logout = () => {
 };
 // Get current logged-in user
 export const getUser = async () => {
-  const response = await axiosInstance.get("/users/me");
+  const response = await axiosInstance.get("/api/users/profile");
   return response.data;
 };
