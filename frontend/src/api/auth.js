@@ -4,10 +4,6 @@ import axiosInstance from "./axios";
 // Login user
 export const login = async (credentials) => {
   const response = await axiosInstance.post("/auth/login", credentials);
-  if (response.data?.token) {
-    localStorage.setItem("token", response.data.token);
-    localStorage.setItem("user", JSON.stringify(response.data.user));
-  }
   return response.data;
 };
 
@@ -17,14 +13,10 @@ export const signup = async (userData) => {
   return response.data;
 };
 
-// Logout user
-export const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "/auth/login";
-};
-// Get current logged-in user
-export const getUser = async () => {
+// Logout handled on client side (no API call)
+
+// Get current logged-in user profile
+export const getUserProfile = async () => {
   const response = await axiosInstance.get("/api/users/profile");
   return response.data;
 };

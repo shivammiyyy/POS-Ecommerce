@@ -12,56 +12,77 @@ const EmployeeContext = createContext();
 
 export const EmployeeProvider = ({ children }) => {
   const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
 
-  // ➕ Add employee to store
-  const addStoreEmployee = async (employeeData, storeId) => {
-    const emp = await createStoreEmployee(employeeData, storeId);
+  const addStoreEmployee = async (storeId, employeeData) => {
+    const emp = await createStoreEmployee(storeId, employeeData);
     setEmployees((prev) => [...prev, emp]);
     return emp;
   };
 
-  // ➕ Add employee to branch
-  const addBranchEmployee = async (employeeData, branchId) => {
-    const emp = await createBranchEmployee(employeeData, branchId);
+  const addBranchEmployee = async (branchId, employeeData) => {
+    const emp = await createBranchEmployee(branchId, employeeData);
     setEmployees((prev) => [...prev, emp]);
     return emp;
   };
 
-  // ✏️ Update employee
   const editEmployee = async (id, employeeData) => {
     const updated = await updateEmployee(id, employeeData);
     setEmployees((prev) => prev.map((e) => (e.id === id ? updated : e)));
+    if (selectedEmployee?.id === id) setSelectedEmployee(updated);
     return updated;
   };
 
-  // ❌ Delete employee
   const removeEmployee = async (id) => {
     await deleteEmployee(id);
     setEmployees((prev) => prev.filter((e) => e.id !== id));
+    if (selectedEmployee?.id === id) setSelectedEmployee(null);
   };
 
-  // 🏬 Get store employees
   const fetchStoreEmployees = async (storeId, role) => {
-    const data = await getStoreEmployees(storeId, role);
-    setEmployees(data);
+    setLoading(true);
+    try {
+      const data = await getStoreEmployees(storeId, role);
+      setEmployees(data);
+      return data;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 🏢 Get branch employees
   const fetchBranchEmployees = async (branchId, role) => {
-    const data = await getBranchEmployees(branchId, role);
-    setEmployees(data);
+    setLoading(true);
+    try {
+      const data = await getBranchEmployees(branchId, role);
+      setEmployees(data);
+      return data;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <EmployeeContext.Provider
       value={{
         employees,
+        selectedEmployee,
+        loading,
+        error,
+        showForm,
+        editingEmployee,
         addStoreEmployee,
         addBranchEmployee,
         editEmployee,
         removeEmployee,
         fetchStoreEmployees,
         fetchBranchEmployees,
+        setShowForm,
+        setEditingEmployee,
+        setSelectedEmployee,
       }}
     >
       {children}
@@ -69,4 +90,8 @@ export const EmployeeProvider = ({ children }) => {
   );
 };
 
-export const useEmployees = () => useContext(EmployeeContext);
+export const useEmployees = () => {
+  const context = useContext(EmployeeContext);
+  if (!context) throw new Error("useEmployees must be used within EmployeeProvider");
+  return context;
+};

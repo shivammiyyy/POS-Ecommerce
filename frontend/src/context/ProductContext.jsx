@@ -1,33 +1,42 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
-
   createProduct,
+  getProductsByStore,
   updateProduct,
   deleteProduct,
 } from "../api/products";
-import { getInventoryByBranch, updateInventory } from "../api/inventory";
 import { useStore } from "./StoreContext";
 
 const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
-  const { activeBranch } = useStore();
+  const { activeStore } = useStore();
   const [products, setProducts] = useState([]);
-  const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 📦 Fetch products for branch
-
-  // 🏷️ CRUD operations
   const addProduct = async (productData) => {
     const newProduct = await createProduct(productData);
     setProducts((prev) => [...prev, newProduct]);
+    return newProduct;
   };
 
-  const editProduct = async (id, updatedData) => {
-    const updated = await updateProduct(id, updatedData);
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updated } : p))
-    );
+  const fetchProductsByStore = async (storeId) => {
+    if (!storeId) return;
+    setLoading(true);
+    try {
+      const data = await getProductsByStore(storeId);
+      setProducts(data);
+      return data;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editProduct = async (id, productData) => {
+    const updated = await updateProduct(id, productData);
+    setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+    return updated;
   };
 
   const removeProduct = async (id) => {
@@ -35,37 +44,22 @@ export const ProductProvider = ({ children }) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // 📊 Inventory
-  const fetchInventory = async (branchId) => {
-    if (!branchId) return;
-    const data = await getInventoryByBranch(branchId);
-    setInventory(data);
-  };
-
-  const editInventory = async (id, qty) => {
-    const updated = await updateInventory(id, { quantity: qty });
-    setInventory((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, ...updated } : i))
-    );
-  };
-
-  // 🔄 Auto refresh when branch changes
   useEffect(() => {
-    if (activeBranch) {
-      fetchInventory(activeBranch.id);
+    if (activeStore) {
+      fetchProductsByStore(activeStore.id);
     }
-  }, [activeBranch]);
+  }, [activeStore]);
 
   return (
     <ProductContext.Provider
       value={{
         products,
-        inventory,
+        loading,
+        error,
         addProduct,
+        fetchProductsByStore,
         editProduct,
         removeProduct,
-        fetchInventory,
-        editInventory,
       }}
     >
       {children}
@@ -73,4 +67,8 @@ export const ProductProvider = ({ children }) => {
   );
 };
 
-export const useProducts = () => useContext(ProductContext);
+export const useProducts = () => {
+  const context = useContext(ProductContext);
+  if (!context) throw new Error("useProducts must be used within ProductProvider");
+  return context;
+};

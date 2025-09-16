@@ -5,26 +5,34 @@ const PaymentContext = createContext();
 
 export const PaymentProvider = ({ children }) => {
   const [paymentIntent, setPaymentIntent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 🆕 Create Stripe PaymentIntent
-  const initPayment = async (amount) => {
-    const intent = await createPaymentIntent(amount);
-    setPaymentIntent(intent);
-    return intent;
+  const initPayment = async (amount, currency = "inr", description = "") => {
+    setLoading(true);
+    try {
+      const intent = await createPaymentIntent(amount, currency, description);
+      setPaymentIntent(intent);
+      return intent;
+    } catch (err) {
+      setError(err.message || "Payment initialization failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
-
 
   return (
     <PaymentContext.Provider
-      value={{
-        paymentIntent,
-        initPayment,
-      }}
+      value={{ paymentIntent, loading, error, initPayment }}
     >
       {children}
     </PaymentContext.Provider>
   );
 };
 
-export const usePayments = () => useContext(PaymentContext);
-
+export const usePayments = () => {
+  const context = useContext(PaymentContext);
+  if (!context) throw new Error("usePayments must be used within PaymentProvider");
+  return context;
+};

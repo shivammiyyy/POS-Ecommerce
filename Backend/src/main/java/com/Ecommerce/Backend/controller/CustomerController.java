@@ -20,7 +20,7 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.createCustomer(customer));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customer) throws Exception {
         return ResponseEntity.ok(customerService.updateCustomer(id,customer));
     }

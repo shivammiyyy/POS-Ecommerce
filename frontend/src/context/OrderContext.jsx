@@ -7,74 +7,87 @@ import {
   getOrdersByCustomer,
   getTodayOrdersByBranch,
   getTop5RecentOrders,
-  deleteOrder,
 } from "../api/orders";
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 🆕 Create new order
   const placeOrder = async (orderData) => {
-    const order = await createOrder(orderData);
-    setOrders((prev) => [order, ...prev]);
-    return order;
+    try {
+      const order = await createOrder(orderData);
+      setOrders((prev) => [order, ...prev]);
+      return order;
+    } catch (err) {
+      setError(err.message || "Order creation failed");
+      throw err;
+    }
   };
 
-  // 📦 Get order by ID
   const fetchOrderById = async (id) => {
     return await getOrderById(id);
   };
 
-  // 🏬 Orders by branch
   const fetchOrdersByBranch = async (branchId) => {
-    const data = await getOrdersByBranch(branchId);
-    setOrders(data);
+    setLoading(true);
+    try {
+      const data = await getOrdersByBranch(branchId);
+      setOrders(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 👨‍💼 Orders by cashier
   const fetchOrdersByCashier = async (cashierId) => {
-    const data = await getOrdersByCashier(cashierId);
-    setOrders(data);
+    setLoading(true);
+    try {
+      const data = await getOrdersByCashier(cashierId);
+      setOrders(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 👤 Orders by customer
   const fetchOrdersByCustomer = async (customerId) => {
-    const data = await getOrdersByCustomer(customerId);
-    setOrders(data);
+    setLoading(true);
+    try {
+      const data = await getOrdersByCustomer(customerId);
+      setOrders(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 📅 Today’s orders
-  const fetchTodayOrders = async (branchId) => {
-    const data = await getTodayOrdersByBranch(branchId);
-    setOrders(data);
+  const fetchTodayOrdersByBranch = async (branchId) => {
+    setLoading(true);
+    try {
+      const data = await getTodayOrdersByBranch(branchId);
+      setOrders(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 🕔 Top 5 recent
-  const fetchTop5Recent = async (branchId) => {
-    const data = await getTop5RecentOrders(branchId);
-    setOrders(data);
-  };
-
-  // ❌ Delete order
-  const removeOrder = async (id) => {
-    await deleteOrder(id);
-    setOrders((prev) => prev.filter((o) => o.id !== id));
+  const fetchTop5RecentOrders = async (branchId) => {
+    return await getTop5RecentOrders(branchId);
   };
 
   return (
     <OrderContext.Provider
       value={{
         orders,
+        loading,
+        error,
         placeOrder,
         fetchOrderById,
         fetchOrdersByBranch,
         fetchOrdersByCashier,
         fetchOrdersByCustomer,
-        fetchTodayOrders,
-        fetchTop5Recent,
-        removeOrder,
+        fetchTodayOrdersByBranch,
+        fetchTop5RecentOrders,
       }}
     >
       {children}
@@ -82,4 +95,8 @@ export const OrderProvider = ({ children }) => {
   );
 };
 
-export const useOrders = () => useContext(OrderContext);
+export const useOrders = () => {
+  const context = useContext(OrderContext);
+  if (!context) throw new Error("useOrders must be used within OrderProvider");
+  return context;
+};

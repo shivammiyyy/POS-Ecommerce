@@ -1,5 +1,6 @@
 package com.Ecommerce.Backend.domain;
 
 public enum PaymentType {
-    STRIPE
+    STRIPE,
+    CASH
 }

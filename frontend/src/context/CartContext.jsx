@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { createOrder } from "../api/orders";
 import { createPaymentIntent } from "../api/payments";
 
@@ -6,8 +6,9 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // ➕ Add item
   const addToCart = (product, quantity = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
@@ -22,12 +23,10 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ➖ Remove item
   const removeFromCart = (productId) => {
     setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
-  // 🔄 Update quantity
   const updateQuantity = (productId, quantity) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -36,8 +35,7 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // 💰 Totals
-  const total = useMemo(
+  const subtotal = useMemo(
     () =>
       cartItems.reduce(
         (acc, item) => acc + item.product.sellingPrice * item.quantity,
@@ -46,34 +44,39 @@ export const CartProvider = ({ children }) => {
     [cartItems]
   );
 
-  // 🛒 Checkout: create payment + order
   const checkout = async (customerId, paymentType) => {
-    // 1️⃣ Create Payment Intent (Stripe)
-    const paymentIntent = await createPaymentIntent(total);
-
-    // 2️⃣ Create Order linked to that intent
-    const orderPayload = {
-      customerId,
-      paymentType,
-      items: cartItems.map((item) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-      })),
-    };
-
-    const order = await createOrder(orderPayload);
-    setCartItems([]);
-    return { paymentIntent, order };
+    setLoading(true);
+    try {
+      const paymentIntent = await createPaymentIntent(subtotal);
+      const orderPayload = {
+        customerId,
+        paymentType,
+        items: cartItems.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+      };
+      const order = await createOrder(orderPayload);
+      setCartItems([]);
+      return { paymentIntent, order };
+    } catch (err) {
+      setError(err.message || "Checkout failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
+        loading,
+        error,
         addToCart,
         removeFromCart,
         updateQuantity,
-        total,
+        subtotal,
         checkout,
       }}
     >
@@ -82,4 +85,8 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within CartProvider");
+  return context;
+};
